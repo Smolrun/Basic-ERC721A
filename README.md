@@ -1,5 +1,7 @@
 This is a basic ERC721A template that is meant to be used with Smolrun's Basic Mint Site Template.
 
+The contract is flattened and requires no constructor arguments to ensure ease of verification. 
+
 Comments denote where changes are needed.
 
 If you have any questions, reach out to Smolrun on Twitter (@smolrun).
