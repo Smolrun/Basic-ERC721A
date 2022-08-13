@@ -1658,7 +1658,7 @@ contract BasicERC721A is ERC721A, Ownable, ReentrancyGuard {
         }
 
         require(amount <= maxPerTx &&
-                addressMinted[msg.sender] + amount <= maxPerWallet, "You can only mint 2!");
+                addressMinted[msg.sender] + amount <= maxPerWallet, "You can't mint that many!!");
 
         require(totalSupply() + amount <= MAX_SUPPLY, "Amount exceeds supply!");
 
