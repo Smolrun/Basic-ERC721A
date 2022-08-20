@@ -1650,19 +1650,21 @@ contract BasicERC721A is ERC721A, Ownable, ReentrancyGuard {
 
     // Change Name and Token Symbol
     constructor() ERC721A("Basic ERC721A", "BASIC") {
+        // Mint the first token to deployer address
+        _mint(msg.sender, 1);
     }
 
     function mint(uint256 amount) public payable nonReentrant {
-        if (onlyAllowList && msg.sender != owner()) {
-            require(allowList[msg.sender] == 1, "You aren't on Allow List!");
-        }
-
-        require(amount <= maxPerTx &&
-                addressMinted[msg.sender] + amount <= maxPerWallet, "You can't mint that many!!");
-
         require(totalSupply() + amount <= MAX_SUPPLY, "Amount exceeds supply!");
 
         if (msg.sender != owner()) {
+            if (onlyAllowList) {
+                require(allowList[msg.sender] == 1, "You aren't on Allow List!");
+            }    
+
+            require(amount <= maxPerTx &&
+                    addressMinted[msg.sender] + amount <= maxPerWallet, "You can't mint that many!");
+
             require(!paused, "Minting is paused!");
             require(msg.value == cost * amount, "Insufficient funds!");
         }
@@ -1676,9 +1678,8 @@ contract BasicERC721A is ERC721A, Ownable, ReentrancyGuard {
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
-
-        uint256 token = tokenId + 1;
-        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, token.toString(), baseExtension)) : '';
+        
+        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), baseExtension)) : '';
     }
 
     function updateCost(uint256 _newAmount) public onlyOwner {
@@ -1709,6 +1710,11 @@ contract BasicERC721A is ERC721A, Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < _addresses.length; i++) {
             allowList[_addresses[i]] = 1;
         }
+    }
+
+    //overrides
+    function _startTokenId() internal view virtual override returns (uint256) {
+        return 1;
     }
 
     //royalties
